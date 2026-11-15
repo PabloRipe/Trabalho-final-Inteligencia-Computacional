@@ -1,4 +1,4 @@
-﻿"""Aplicativo Streamlit do projeto de credit scoring.
+"""Aplicativo Streamlit do projeto de credit scoring.
 
 Le apenas os artefatos gerados por src/train_eval.py; não retreina o modelo.
 
@@ -375,48 +375,73 @@ with tab_verificacao:
 with tab_caso:
     st.subheader("Simular um cliente")
     st.markdown(
-        "Preencha as caracteristicas e veja a probabilidade estimada de inadimplencia. "
-        "O resultado usa o modelo e o limiar carregados dos artefatos de treino."
+        "Preencha as características, clique em **Analisar crédito** e veja a probabilidade "
+        "estimada de inadimplência. Para um novo teste, altere os campos e clique novamente; "
+        "não é preciso recarregar a página."
     )
 
     opcoes = metadata["opcoes_formulario"]
     categorias = opcoes["categorias"]
     numericos = opcoes["numericos"]
 
+    def limpar_caso() -> None:
+        for chave in list(st.session_state):
+            if str(chave).startswith("caso_"):
+                del st.session_state[chave]
+
     coluna_1, coluna_2, coluna_3 = st.columns(3)
 
-    sexo = coluna_1.selectbox("Sexo", categorias["sexo"])
-    posse_veiculo = coluna_2.selectbox("Possui veículo", categorias["posse_de_veiculo"])
-    posse_imovel = coluna_3.selectbox("Possui imóvel", categorias["posse_de_imovel"])
+    sexo = coluna_1.selectbox("Sexo", categorias["sexo"], key="caso_sexo")
+    posse_veiculo = coluna_2.selectbox(
+        "Possui veículo", categorias["posse_de_veiculo"], key="caso_posse_veiculo"
+    )
+    posse_imovel = coluna_3.selectbox(
+        "Possui imóvel", categorias["posse_de_imovel"], key="caso_posse_imovel"
+    )
 
     qtd_filhos = coluna_1.slider(
         "Quantidade de filhos",
         int(numericos["qtd_filhos"]["min"]),
         int(numericos["qtd_filhos"]["max"]),
         int(numericos["qtd_filhos"]["mediana"]),
+        key="caso_qtd_filhos",
     )
     idade = coluna_2.slider(
         "Idade",
         int(numericos["idade"]["min"]),
         int(numericos["idade"]["max"]),
         int(numericos["idade"]["mediana"]),
+        key="caso_idade",
     )
     qt_pessoas = coluna_3.slider(
         "Pessoas na residência",
         int(numericos["qt_pessoas_residencia"]["min"]),
         int(numericos["qt_pessoas_residencia"]["max"]),
         int(numericos["qt_pessoas_residencia"]["mediana"]),
+        key="caso_qt_pessoas",
     )
 
-    tipo_renda = coluna_1.selectbox("Tipo de renda", categorias["tipo_renda"])
-    educacao = coluna_2.selectbox("Escolaridade", categorias["educacao"])
-    estado_civil = coluna_3.selectbox("Estado civil", categorias["estado_civil"])
+    tipo_renda = coluna_1.selectbox(
+        "Tipo de renda", categorias["tipo_renda"], key="caso_tipo_renda"
+    )
+    educacao = coluna_2.selectbox(
+        "Escolaridade", categorias["educacao"], key="caso_educacao"
+    )
+    estado_civil = coluna_3.selectbox(
+        "Estado civil", categorias["estado_civil"], key="caso_estado_civil"
+    )
     tipo_residencia = coluna_1.selectbox(
-        "Tipo de residência", categorias["tipo_residencia"]
+        "Tipo de residência", categorias["tipo_residencia"], key="caso_tipo_residencia"
     )
 
     tempo_desconhecido = coluna_2.checkbox(
-        "Tempo de emprego desconhecido", value=False
+        "Tempo de emprego desconhecido",
+        value=False,
+        key="caso_tempo_desconhecido",
+        help=(
+            "Se marcado, o valor abaixo é ignorado e o pipeline trata o tempo de "
+            "emprego como ausente."
+        ),
     )
     tempo_emprego = coluna_2.number_input(
         "Tempo de emprego (anos)",
@@ -425,7 +450,7 @@ with tab_caso:
         value=round(float(numericos["tempo_emprego"]["mediana"]), 2),
         step=0.5,
         disabled=tempo_desconhecido,
-        help="Se marcado como desconhecido, entra como ausente e o pipeline aplica a mediana.",
+        key="caso_tempo_emprego",
     )
     renda = coluna_3.number_input(
         "Renda mensal (R$)",
@@ -433,50 +458,73 @@ with tab_caso:
         max_value=3_000_000.0,
         value=round(float(numericos["renda"]["mediana"]), 2),
         step=100.0,
+        key="caso_renda",
     )
 
-    caso = pd.DataFrame(
-        [
-            {
-                "qtd_filhos": qtd_filhos,
-                "idade": idade,
-                "tempo_emprego": np.nan if tempo_desconhecido else tempo_emprego,
-                "qt_pessoas_residencia": qt_pessoas,
-                "renda": renda,
-                "sexo": sexo,
-                "posse_de_veiculo": posse_veiculo,
-                "posse_de_imovel": posse_imovel,
-                "tipo_renda": tipo_renda,
-                "educacao": educacao,
-                "estado_civil": estado_civil,
-                "tipo_residencia": tipo_residencia,
-            }
-        ],
-        columns=metadata["features"],
+    acoes = st.columns([1, 1, 2])
+    enviar = acoes[0].button(
+        "Analisar crédito", type="primary", use_container_width=True
+    )
+    acoes[1].button(
+        "Limpar campos e resultado", on_click=limpar_caso, use_container_width=True
     )
 
-    probabilidade = float(model.predict_proba(caso)[0, 1])
-    previsao = 1 if probabilidade >= threshold else 0
+    if enviar:
+        caso = pd.DataFrame(
+            [
+                {
+                    "qtd_filhos": qtd_filhos,
+                    "idade": idade,
+                    "tempo_emprego": np.nan if tempo_desconhecido else tempo_emprego,
+                    "qt_pessoas_residencia": qt_pessoas,
+                    "renda": renda,
+                    "sexo": sexo,
+                    "posse_de_veiculo": posse_veiculo,
+                    "posse_de_imovel": posse_imovel,
+                    "tipo_renda": tipo_renda,
+                    "educacao": educacao,
+                    "estado_civil": estado_civil,
+                    "tipo_residencia": tipo_residencia,
+                }
+            ],
+            columns=metadata["features"],
+        )
+        probabilidade = float(model.predict_proba(caso)[0, 1])
+        st.session_state["caso_resultado"] = {
+            "probabilidade": probabilidade,
+            "previsao": int(probabilidade >= threshold),
+            "caso": caso,
+        }
 
-    st.divider()
-    resultado_1, resultado_2, resultado_3 = st.columns(3)
-    resultado_1.metric("Probabilidade estimada de mau=1", pct(probabilidade))
-    resultado_2.metric(
-        "Classificação com o limiar atual",
-        "Inadimplente (1)" if previsao == 1 else "Bom pagador (0)",
-    )
-    resultado_3.metric("Limiar de decisão", fmt(threshold, 3))
+    resultado = st.session_state.get("caso_resultado")
+    if resultado is None:
+        st.info("Ajuste os campos e clique em **Analisar crédito** para ver o resultado.")
+    else:
+        probabilidade = float(resultado["probabilidade"])
+        previsao = int(resultado["previsao"])
+        caso = resultado["caso"]
 
-    st.progress(min(max(probabilidade, 0.0), 1.0))
-    st.caption(
-        "A barra mostra a probabilidade estimada; a classificação usa o limiar calibrado, "
-        "não necessariamente 0,5."
-    )
+        st.divider()
+        resultado_1, resultado_2, resultado_3 = st.columns(3)
+        resultado_1.metric("Probabilidade estimada de mau=1", pct(probabilidade))
+        resultado_2.metric(
+            "Classificação com o limiar atual",
+            "Inadimplente (1)" if previsao == 1 else "Bom pagador (0)",
+        )
+        resultado_3.metric("Limiar de decisão", fmt(threshold, 3))
 
-    st.info(
-        "Resultado didatico. A base tem poder preditivo limitado "
-        f"(AUC ~{fmt(chosen_metrics['roc_auc'], 2)}) e o modelo não substitui uma análise de credito."
-    )
+        st.progress(min(max(probabilidade, 0.0), 1.0))
+        st.caption(
+            "A barra mostra a probabilidade estimada; a classificação usa o limiar calibrado, "
+            "não necessariamente 0,5. Altere os campos e clique em Analisar crédito "
+            "para um novo teste."
+        )
 
-    with st.expander("Ver a linha enviada ao modelo"):
-        st.dataframe(caso, hide_index=True)
+        st.info(
+            "Resultado didático. A base tem poder preditivo limitado "
+            f"(AUC ~{fmt(chosen_metrics['roc_auc'], 2)}) e o modelo não substitui uma análise de crédito."
+        )
+
+        with st.expander("Ver a linha enviada ao modelo"):
+            st.dataframe(caso, hide_index=True)
+
