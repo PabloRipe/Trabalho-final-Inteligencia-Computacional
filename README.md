@@ -8,6 +8,11 @@ cruzada agrupada por cliente, aplicativo Streamlit e documentacao.
 O codigo foi escrito com apoio do agente **opencode** rodando o modelo DeepSeek.
 As decisoes, verificacoes e correcoes estao registradas em `diario_de_bordo.md`.
 
+## Guias de reproducao com outras LLMs
+
+- [Passo a passo com Claude Code](docs/GUIA_CLAUDE_CODE.md)
+- [Passo a passo com Codex (OpenAI)](docs/GUIA_CODEX_OPENAI.md)
+
 ## Base de dados
 
 | Item | Valor |
