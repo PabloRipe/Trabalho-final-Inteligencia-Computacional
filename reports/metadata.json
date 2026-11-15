@@ -1,0 +1,225 @@
+{
+  "gerado_em": "2026-11-15 12:08:16",
+  "shape_original": [
+    750000,
+    16
+  ],
+  "colunas_originais": [
+    "Unnamed: 0",
+    "data_ref",
+    "index",
+    "sexo",
+    "posse_de_veiculo",
+    "posse_de_imovel",
+    "qtd_filhos",
+    "tipo_renda",
+    "educacao",
+    "estado_civil",
+    "tipo_residencia",
+    "idade",
+    "tempo_emprego",
+    "qt_pessoas_residencia",
+    "renda",
+    "mau"
+  ],
+  "features": [
+    "qtd_filhos",
+    "idade",
+    "tempo_emprego",
+    "qt_pessoas_residencia",
+    "renda",
+    "sexo",
+    "posse_de_veiculo",
+    "posse_de_imovel",
+    "tipo_renda",
+    "educacao",
+    "estado_civil",
+    "tipo_residencia"
+  ],
+  "numericas": [
+    "qtd_filhos",
+    "idade",
+    "tempo_emprego",
+    "qt_pessoas_residencia",
+    "renda"
+  ],
+  "categoricas": [
+    "sexo",
+    "posse_de_veiculo",
+    "posse_de_imovel",
+    "tipo_renda",
+    "educacao",
+    "estado_civil",
+    "tipo_residencia"
+  ],
+  "ids_removidos": [
+    "Unnamed: 0",
+    "index",
+    "data_ref"
+  ],
+  "target": "mau",
+  "taxa_target": 0.07819066666666667,
+  "baseline_accuracy": 0.9218093333333334,
+  "drift_mensal": {
+    "2015-01-01": 0.12114,
+    "2015-02-01": 0.09868,
+    "2015-03-01": 0.07356,
+    "2015-04-01": 0.05326,
+    "2015-05-01": 0.03702,
+    "2015-06-01": 0.03026,
+    "2015-07-01": 0.02722,
+    "2015-08-01": 0.02954,
+    "2015-09-01": 0.03804,
+    "2015-10-01": 0.05208,
+    "2015-11-01": 0.07494,
+    "2015-12-01": 0.09712,
+    "2016-01-01": 0.12412,
+    "2016-02-01": 0.14772,
+    "2016-03-01": 0.16816
+  },
+  "n_clientes": 16650,
+  "duplicatas": 0,
+  "faltantes_tempo_emprego": {
+    "taxa": 0.16794266666666666,
+    "tratamento": "mediana + indicador de ausencia dentro do Pipeline (fit apenas no treino)"
+  },
+  "split": {
+    "estrategia": "temporal",
+    "test_start": "2016-01-01",
+    "treino_periodo": [
+      "2015-01-01",
+      "2015-12-01"
+    ],
+    "teste_periodo": [
+      "2016-01-01",
+      "2016-03-01"
+    ],
+    "treino_linhas": 50000,
+    "teste_linhas": 15000,
+    "taxa_treino": 0.06106,
+    "taxa_teste": 0.14673333333333333,
+    "amostragem": "estratificada por mes x target",
+    "random_state": 42,
+    "clientes_em_ambos_periodos": 9421
+  },
+  "modelo_escolhido": {
+    "nome": "Arvore de Decisao",
+    "peso_classes": "None",
+    "limiar": 0.13736263736263737,
+    "criterio": "maior F1 out-of-fold (10-fold agrupado por cliente); desempate por recall e ROC/AUC; teste 2016 reservado",
+    "metricas": {
+      "acuracia": 0.6558666666666667,
+      "precisao": 0.25435540069686413,
+      "recall": 0.696501590186279,
+      "f1": 0.37263004375303843,
+      "roc_auc": 0.7285170791008029,
+      "tn": 8305.0,
+      "fp": 4494.0,
+      "fn": 668.0,
+      "tp": 1533.0
+    },
+    "metricas_limiar_0_5": {
+      "acuracia_limiar_0_5": 0.8524,
+      "precisao_limiar_0_5": 0.19047619047619047,
+      "recall_limiar_0_5": 0.001817355747387551,
+      "f1_limiar_0_5": 0.0036003600360036
+    },
+    "arquivo": "modelo.joblib"
+  },
+  "cv": {
+    "estrategia": "StratifiedGroupKFold 10-fold (grupos = index)",
+    "amostra": 50000,
+    "limiar_calibrado_por": "F1 out-of-fold na validacao (sem uso do teste)"
+  },
+  "opcoes_formulario": {
+    "categorias": {
+      "sexo": [
+        "F",
+        "M"
+      ],
+      "posse_de_veiculo": [
+        "N",
+        "S"
+      ],
+      "posse_de_imovel": [
+        "N",
+        "S"
+      ],
+      "tipo_renda": [
+        "Assalariado",
+        "Bolsista",
+        "Empresário",
+        "Pensionista",
+        "Servidor público"
+      ],
+      "educacao": [
+        "Fundamental",
+        "Médio",
+        "Pós graduação",
+        "Superior completo",
+        "Superior incompleto"
+      ],
+      "estado_civil": [
+        "Casado",
+        "Separado",
+        "Solteiro",
+        "União",
+        "Viúvo"
+      ],
+      "tipo_residencia": [
+        "Aluguel",
+        "Casa",
+        "Com os pais",
+        "Comunitário",
+        "Estúdio",
+        "Governamental"
+      ]
+    },
+    "numericos": {
+      "qtd_filhos": {
+        "min": 0.0,
+        "max": 14.0,
+        "mediana": 0.0
+      },
+      "idade": {
+        "min": 22.0,
+        "max": 68.0,
+        "mediana": 43.0
+      },
+      "tempo_emprego": {
+        "min": 0.1178082191780822,
+        "max": 42.90684931506849,
+        "mediana": 6.016438356164383
+      },
+      "qt_pessoas_residencia": {
+        "min": 1.0,
+        "max": 15.0,
+        "mediana": 2.0
+      },
+      "renda": {
+        "min": 168.02,
+        "max": 2673757.35,
+        "mediana": 9861.05
+      }
+    }
+  },
+  "versoes": {
+    "python": "3.13.5",
+    "pandas": "3.1.1",
+    "numpy": "2.5.4",
+    "scikit_learn": "1.9.1",
+    "matplotlib": "3.11.2",
+    "seaborn": "0.13.2"
+  },
+  "tempo_total_s": 562.1,
+  "artefatos": {
+    "metricas": "metricas.csv",
+    "metricas_cv": "metricas_cv.csv",
+    "amostra": "dados_amostra.csv",
+    "matriz_confusao": "matriz_confusao.png",
+    "roc": "roc.png",
+    "precisao_recall": "precisao_recall.png",
+    "limiares_teste": "limiares_teste.csv",
+    "decisao": "decisao_modelo.txt"
+  }
+}

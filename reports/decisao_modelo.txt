@@ -1,0 +1,8 @@
+Modelo escolhido: Arvore de Decisao (peso_classes=None, limiar=0.1374)
+Criterio: maior F1 out-of-fold na validacao cruzada agrupada por cliente (desempate por recall e depois ROC/AUC); o conjunto de teste 2016 nao foi usado na escolha.
+Teste 2016: F1=0.3726 | recall=0.6965 | precisao=0.2544 | AUC=0.7285 | acuracia=0.6559
+No limiar padrao 0.5 o F1 cairia para 0.0036 e o recall para 0.0018: o limiar 0.5 assume prevalencia de treino (6.11%) e nao a do teste (14.67%).
+Baseline trivial (sempre bom pagador): acuracia ~0.9218, recall=0.
+Matriz de confusao: TN=8305, FP=4494, FN=668, TP=1533.
+Observacao: split temporal (2015 -> 2016) e taxa de inadimplencia crescente no tempo; o recall prioriza reduzir falsos negativos (inadimplente classificado como bom pagador).
+Limitacao: a discriminacao e modesta (AUC ~0.73); renda concentra quase todo o sinal (AUC univariada ~0.74 dentro do mes). Nao usar como decisao real de credito.
